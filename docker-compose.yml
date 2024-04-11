@@ -1,0 +1,33 @@
+volumes:
+  psql_volume:
+    name: "psql_v"
+
+services:
+  psql:
+    image: postgres:alpine3.19
+    container_name: psql16.2
+    hostname: psql_host
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: open_weather
+    volumes:
+      - psql_volume:/var/lib/postgresql/data
+
+  app:
+    image: open_weather_api:1.0
+    container_name: open_weather
+    restart: always
+    ports:
+      - "8501:8501"
+    environment:
+      PG_DBNAME : open_weather
+      PG_USER : root
+      PG_PASSWORD : 123456
+      PG_HOST : psql_host
+      PG_PORT : 5432
+    depends_on:
+      - psql
